@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_raw_material_inventory_root"
+        name="Raw Material"
+        parent="stock.menu_stock_root"
+        sequence="35"
+    />
+    <menuitem
+        id="menu_raw_material_product"
+        name="Bahan Baku"
+        parent="menu_raw_material_inventory_root"
+        action="action_raw_material_product"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_raw_material_receipt"
+        name="Penerimaan Bahan Baku"
+        parent="menu_raw_material_inventory_root"
+        action="action_raw_material_receipt"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_raw_material_usage"
+        name="Pemakaian Bahan Baku"
+        parent="menu_raw_material_inventory_root"
+        action="action_raw_material_usage"
+        sequence="30"
+    />
+    <menuitem
+        id="menu_raw_material_stock_alert"
+        name="Notifikasi Stok Kritis"
+        parent="menu_raw_material_inventory_root"
+        action="action_raw_material_stock_alert"
+        sequence="40"
+    />
+    <menuitem
+        id="menu_raw_material_stock_report"
+        name="Laporan Stok Bahan Baku"
+        parent="menu_raw_material_inventory_root"
+        action="action_raw_material_stock_report_wizard"
+        sequence="45"
+    />
+</odoo>

@@ -1,0 +1,19 @@
+{
+    "name": "Raw Material Inventory Extension",
+    "summary": "Extend Odoo Inventory for raw material stock management",
+    "version": "17.0.1.0.0",
+    "category": "Inventory/Inventory",
+    "author": "IF3141 SI",
+    "license": "LGPL-3",
+    "depends": ["stock"],
+    "data": [
+        "security/ir.model.access.csv",
+        "data/raw_material_operation_type.xml",
+        "views/product_template_views.xml",
+        "views/raw_material_stock_report_views.xml",
+        "views/stock_picking_views.xml",
+        "views/menu_views.xml",
+    ],
+    "application": True,
+    "installable": True,
+}
