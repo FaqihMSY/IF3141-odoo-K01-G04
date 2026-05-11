@@ -82,7 +82,8 @@ class PurchaseOrderLine(models.Model):
 
     manual_price_unit = fields.Float(
         string="Manual Unit Price",
-        store=False,
+        store=True,
+        copy=False,
     )
     price_unit = fields.Float(
         string="Unit Price",
@@ -96,11 +97,46 @@ class PurchaseOrderLine(models.Model):
             if line.price_unit:
                 line.manual_price_unit = line.price_unit
 
+    @api.onchange("product_id")
+    def onchange_product_id(self):
+        if not self.product_id or (
+            self.env.context.get("origin_po_id") and self.product_qty
+        ):
+            return
+
+        manual_price = self.manual_price_unit or self.price_unit
+        self.price_unit = self.product_qty = 0.0
+        self._product_id_change()
+        self._suggest_quantity()
+
+        if manual_price:
+            self.manual_price_unit = manual_price
+            self.price_unit = manual_price
+
     @api.onchange("product_id", "product_qty", "product_uom")
     def _onchange_preserve_manual_price(self):
         for line in self:
-            if line.manual_price_unit and line.price_unit in (0.0, False):
+            if line.manual_price_unit:
                 line.price_unit = line.manual_price_unit
+
+    @api.depends("product_qty", "product_uom", "company_id", "manual_price_unit")
+    def _compute_price_unit_and_date_planned_and_name(self):
+        super()._compute_price_unit_and_date_planned_and_name()
+        for line in self:
+            if line.manual_price_unit and not line.display_type:
+                line.price_unit = line.manual_price_unit
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get("price_unit"):
+                vals.setdefault("manual_price_unit", vals["price_unit"])
+        return super().create(vals_list)
+
+    def write(self, values):
+        if values.get("price_unit"):
+            values = dict(values, manual_price_unit=values["price_unit"])
+        return super().write(values)
 
     @api.constrains("product_id", "product_qty", "price_unit")
     def _check_procurement_line(self):

@@ -43,10 +43,12 @@
                             <field name="order_line" context="{'default_date_planned': expected_delivery_date}">
                                 <tree editable="bottom">
                                     <field name="product_id" domain="[('product_tmpl_id.is_raw_material', '=', True)]"/>
+                                    <field name="name" string="Deskripsi"/>
                                     <field name="product_qty"/>
                                     <field name="product_uom_category_id" invisible="1"/>
                                     <field name="product_uom"/>
                                     <field name="price_unit"/>
+                                    <field name="manual_price_unit" invisible="1"/>
                                     <field name="date_planned"/>
                                     <field name="price_subtotal" readonly="1"/>
                                 </tree>
