@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_raw_material_product_tree" model="ir.ui.view">
+        <field name="name">raw.material.product.template.tree</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <tree string="Bahan Baku" decoration-danger="is_stock_critical">
+                <field name="default_code"/>
+                <field name="name"/>
+                <field name="uom_id"/>
+                <field name="qty_available" string="Stok Saat Ini"/>
+                <field name="raw_material_reorder_point"/>
+                <field name="raw_material_stock_status" widget="badge" decoration-danger="raw_material_stock_status == 'critical'" decoration-success="raw_material_stock_status == 'safe'"/>
+                <field name="virtual_available" string="Forecast"/>
+                <field name="is_stock_critical" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_raw_material_product_form" model="ir.ui.view">
+        <field name="name">raw.material.product.template.form</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <form string="Bahan Baku">
+                <sheet>
+                    <field name="is_raw_material" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Contoh: Tepung Terigu Protein Tinggi"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Identitas">
+                            <field name="default_code" string="Kode Bahan" placeholder="Contoh: BB-001"/>
+                            <field name="uom_id"/>
+                        </group>
+                        <group string="Stok">
+                            <field name="raw_material_initial_quantity" placeholder="Contoh: 25" readonly="id"/>
+                            <field name="raw_material_reorder_point" placeholder="Contoh: 10"/>
+                            <field name="qty_available" string="Stok Saat Ini" readonly="1"/>
+                            <field name="virtual_available" string="Forecast" readonly="1"/>
+                            <field name="raw_material_stock_status" widget="badge" readonly="1"/>
+                            <field name="is_stock_critical" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Catatan">
+                            <field name="raw_material_notes" placeholder="Contoh: Simpan di area kering, cek kualitas saat penerimaan."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_raw_material_product_search" model="ir.ui.view">
+        <field name="name">raw.material.product.template.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search string="Bahan Baku">
+                <field name="name"/>
+                <field name="default_code"/>
+                <filter name="critical" string="Stok Kritis" domain="[('is_stock_critical', '=', True)]"/>
+                <filter name="safe" string="Stok Aman" domain="[('is_stock_critical', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_uom" string="Satuan" context="{'group_by': 'uom_id'}"/>
+                    <filter name="group_by_status" string="Status Stok" context="{'group_by': 'raw_material_stock_status'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_raw_material_product" model="ir.actions.act_window">
+        <field name="name">Bahan Baku</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[("is_raw_material", "=", True)]</field>
+        <field name="context">{"default_is_raw_material": True, "default_detailed_type": "product"}</field>
+        <field name="search_view_id" ref="view_raw_material_product_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_product_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_product_form')})]"/>
+    </record>
+
+    <record id="action_raw_material_stock_alert" model="ir.actions.act_window">
+        <field name="name">Notifikasi Stok Kritis</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[("is_stock_critical", "=", True)]</field>
+        <field name="context">{"default_is_raw_material": True, "default_detailed_type": "product"}</field>
+        <field name="search_view_id" ref="view_raw_material_product_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_product_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_product_form')})]"/>
+    </record>
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_raw_material_receipt,access.raw.material.receipt,model_raw_material_receipt,stock.group_stock_user,1,1,1,1
+access_raw_material_receipt_line,access.raw.material.receipt.line,model_raw_material_receipt_line,stock.group_stock_user,1,1,1,1
+access_raw_material_usage,access.raw.material.usage,model_raw_material_usage,stock.group_stock_user,1,1,1,1
+access_raw_material_usage_line,access.raw.material.usage.line,model_raw_material_usage_line,stock.group_stock_user,1,1,1,1
+access_raw_material_stock_report_wizard,access.raw.material.stock.report.wizard,model_raw_material_stock_report_wizard,stock.group_stock_user,1,1,1,1
+access_raw_material_stock_report_line,access.raw.material.stock.report.line,model_raw_material_stock_report_line,stock.group_stock_user,1,1,1,1
