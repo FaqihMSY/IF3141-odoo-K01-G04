@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="group_procurement_staff" model="res.groups">
+        <field name="name">Procurement Staff</field>
+        <field name="implied_ids" eval="[(4, ref('purchase.group_purchase_user'))]"/>
+    </record>
+</odoo>

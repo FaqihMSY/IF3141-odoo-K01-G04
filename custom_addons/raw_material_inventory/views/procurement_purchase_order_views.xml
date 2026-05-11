@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_procurement_purchase_order_tree" model="ir.ui.view">
+        <field name="name">procurement.purchase.order.tree</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <tree string="Purchase Order">
+                <field name="po_number"/>
+                <field name="partner_id"/>
+                <field name="date_order"/>
+                <field name="expected_delivery_date"/>
+                <field name="amount_total"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_procurement_purchase_order_form" model="ir.ui.view">
+        <field name="name">procurement.purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <form string="Purchase Order">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,purchase,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Informasi PO">
+                            <field name="po_number" readonly="1"/>
+                            <field name="date_order"/>
+                            <field name="partner_id" domain="[('supplier_rank', '>', 0)]"/>
+                            <field name="expected_delivery_date" required="1"/>
+                        </group>
+                        <group string="Total">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_untaxed" readonly="1"/>
+                            <field name="amount_tax" readonly="1"/>
+                            <field name="amount_total" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detail Bahan Baku">
+                            <field name="order_line" context="{'default_date_planned': expected_delivery_date}">
+                                <tree editable="bottom">
+                                    <field name="product_id" domain="[('product_tmpl_id.is_raw_material', '=', True)]"/>
+                                    <field name="product_qty"/>
+                                    <field name="product_uom_category_id" invisible="1"/>
+                                    <field name="product_uom"/>
+                                    <field name="price_unit"/>
+                                    <field name="date_planned"/>
+                                    <field name="price_subtotal" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_procurement_purchase_order_search" model="ir.ui.view">
+        <field name="name">procurement.purchase.order.search</field>
+        <field name="model">purchase.order</field>
+        <field name="arch" type="xml">
+            <search string="Purchase Order">
+                <field name="po_number"/>
+                <field name="partner_id"/>
+                <field name="expected_delivery_date"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="purchase" string="Purchase" domain="[('state', '=', 'purchase')]"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="cancel" string="Dibatalkan" domain="[('state', '=', 'cancel')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_supplier" string="Supplier" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_by_status" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_date" string="Tanggal" context="{'group_by': 'date_order'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_procurement_purchase_order" model="ir.actions.act_window">
+        <field name="name">Purchase Order</field>
+        <field name="res_model">purchase.order</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="view_procurement_purchase_order_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_procurement_purchase_order_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_procurement_purchase_order_form')})]"/>
+    </record>
+</odoo>
