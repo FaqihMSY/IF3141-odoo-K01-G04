@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_raw_material_stock_report_line_tree" model="ir.ui.view">
+        <field name="name">raw.material.stock.report.line.tree</field>
+        <field name="model">raw.material.stock.report.line</field>
+        <field name="arch" type="xml">
+            <tree string="Laporan Mutasi Stok Bahan Baku" decoration-danger="stock_status == 'critical'">
+                <field name="movement_date"/>
+                <field name="movement_type" widget="badge" decoration-success="movement_type == 'receipt'" decoration-warning="movement_type == 'usage'"/>
+                <field name="document_name"/>
+                <field name="reference"/>
+                <field name="default_code"/>
+                <field name="product_tmpl_id"/>
+                <field name="uom_id"/>
+                <field name="opening_qty"/>
+                <field name="received_qty" sum="Total Masuk"/>
+                <field name="used_qty" sum="Total Keluar"/>
+                <field name="net_qty" sum="Total Selisih"/>
+                <field name="balance_qty"/>
+                <field name="current_qty"/>
+                <field name="forecast_qty"/>
+                <field name="date_from" optional="hide"/>
+                <field name="date_to" optional="hide"/>
+                <field name="reorder_point" optional="hide"/>
+                <field name="stock_status" widget="badge" decoration-danger="stock_status == 'critical'" decoration-success="stock_status == 'safe'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_raw_material_stock_report_wizard_form" model="ir.ui.view">
+        <field name="name">raw.material.stock.report.wizard.form</field>
+        <field name="model">raw.material.stock.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Laporan Stok Bahan Baku">
+                <sheet>
+                    <group>
+                        <group string="Parameter">
+                            <field name="report_scope" widget="radio"/>
+                            <field
+                                name="product_ids"
+                                widget="many2many_tags"
+                                placeholder="Contoh: pilih BB-001 Tepung Terigu"
+                                invisible="report_scope != 'specific'"
+                            />
+                        </group>
+                        <group string="Periode Mutasi">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Tampilkan Laporan" type="object" name="action_view_report" class="btn-primary"/>
+                    <button string="Batal" special="cancel" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_raw_material_stock_report_wizard" model="ir.actions.act_window">
+        <field name="name">Laporan Stok Bahan Baku</field>
+        <field name="res_model">raw.material.stock.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_raw_material_stock_report_wizard_form"/>
+    </record>
+</odoo>
