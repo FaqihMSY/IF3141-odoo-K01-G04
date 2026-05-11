@@ -8,6 +8,22 @@
         <field name="company_id" eval="False"/>
     </record>
 
+    <record id="seq_raw_material_usage_document" model="ir.sequence">
+        <field name="name">Raw Material Usage Document</field>
+        <field name="code">raw.material.usage.document</field>
+        <field name="prefix">RMUD/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_raw_material_receipt_document" model="ir.sequence">
+        <field name="name">Raw Material Receipt Document</field>
+        <field name="code">raw.material.receipt.document</field>
+        <field name="prefix">RMR/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
     <record id="stock_location_raw_material_production" model="stock.location">
         <field name="name">Raw Material Production</field>
         <field name="usage">production</field>

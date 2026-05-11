@@ -10,6 +10,8 @@
         "security/ir.model.access.csv",
         "data/raw_material_operation_type.xml",
         "views/product_template_views.xml",
+        "views/raw_material_receipt_views.xml",
+        "views/raw_material_usage_views.xml",
         "views/raw_material_stock_report_views.xml",
         "views/stock_picking_views.xml",
         "views/menu_views.xml",

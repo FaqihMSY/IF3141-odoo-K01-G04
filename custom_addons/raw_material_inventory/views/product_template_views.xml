@@ -8,11 +8,11 @@
                 <field name="default_code"/>
                 <field name="name"/>
                 <field name="uom_id"/>
-                <field name="qty_available"/>
+                <field name="qty_available" string="Stok Saat Ini"/>
                 <field name="raw_material_reorder_point"/>
-                <field name="is_stock_critical"/>
-                <field name="raw_material_stock_status"/>
-                <field name="virtual_available"/>
+                <field name="raw_material_stock_status" widget="badge" decoration-danger="raw_material_stock_status == 'critical'" decoration-success="raw_material_stock_status == 'safe'"/>
+                <field name="virtual_available" string="Forecast"/>
+                <field name="is_stock_critical" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -23,38 +23,51 @@
         <field name="arch" type="xml">
             <form string="Bahan Baku">
                 <sheet>
-                    <group>
-                        <group>
+                    <field name="is_raw_material" invisible="1"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
                             <field name="name" placeholder="Contoh: Tepung Terigu Protein Tinggi"/>
-                            <div class="text-muted">
-                                Isi nama bahan baku yang mudah dikenali oleh gudang dan produksi.
-                            </div>
-                            <field name="default_code" placeholder="Contoh: BB-001"/>
-                            <div class="text-muted">
-                                Gunakan kode singkat dan konsisten, misalnya BB-001, BB-002, BB-003.
-                            </div>
-                            <field name="is_raw_material"/>
-                            <field name="uom_id"/>
-                            <field name="raw_material_initial_quantity" placeholder="Contoh: 25" readonly="id"/>
-                            <div class="text-muted">
-                                Opsional untuk data awal. Contoh: isi 25 jika stok pembuka bahan baku adalah 25 satuan.
-                            </div>
-                            <field name="raw_material_reorder_point" placeholder="Contoh: 10"/>
-                            <div class="text-muted">
-                                Batas minimum stok. Jika stok saat ini &lt;= nilai ini, status menjadi Kritis.
-                            </div>
-                        </group>
-                        <group>
-                            <field name="qty_available"/>
-                            <field name="virtual_available"/>
-                            <field name="is_stock_critical"/>
-                        </group>
-                    </group>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="raw_material_notes" placeholder="Contoh: Simpan di area kering, cek kualitas saat penerimaan."/>
+                        <group string="Identitas">
+                            <field name="default_code" string="Kode Bahan" placeholder="Contoh: BB-001"/>
+                            <field name="uom_id"/>
+                        </group>
+                        <group string="Stok">
+                            <field name="raw_material_initial_quantity" placeholder="Contoh: 25" readonly="id"/>
+                            <field name="raw_material_reorder_point" placeholder="Contoh: 10"/>
+                            <field name="qty_available" string="Stok Saat Ini" readonly="1"/>
+                            <field name="virtual_available" string="Forecast" readonly="1"/>
+                            <field name="raw_material_stock_status" widget="badge" readonly="1"/>
+                            <field name="is_stock_critical" invisible="1"/>
+                        </group>
                     </group>
+                    <notebook>
+                        <page string="Catatan">
+                            <field name="raw_material_notes" placeholder="Contoh: Simpan di area kering, cek kualitas saat penerimaan."/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <record id="view_raw_material_product_search" model="ir.ui.view">
+        <field name="name">raw.material.product.template.search</field>
+        <field name="model">product.template</field>
+        <field name="arch" type="xml">
+            <search string="Bahan Baku">
+                <field name="name"/>
+                <field name="default_code"/>
+                <filter name="critical" string="Stok Kritis" domain="[('is_stock_critical', '=', True)]"/>
+                <filter name="safe" string="Stok Aman" domain="[('is_stock_critical', '=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_uom" string="Satuan" context="{'group_by': 'uom_id'}"/>
+                    <filter name="group_by_status" string="Status Stok" context="{'group_by': 'raw_material_stock_status'}"/>
+                </group>
+            </search>
         </field>
     </record>
 
@@ -64,6 +77,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[("is_raw_material", "=", True)]</field>
         <field name="context">{"default_is_raw_material": True, "default_detailed_type": "product"}</field>
+        <field name="search_view_id" ref="view_raw_material_product_search"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_product_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_product_form')})]"/>
@@ -75,6 +89,7 @@
         <field name="view_mode">tree,form</field>
         <field name="domain">[("is_stock_critical", "=", True)]</field>
         <field name="context">{"default_is_raw_material": True, "default_detailed_type": "product"}</field>
+        <field name="search_view_id" ref="view_raw_material_product_search"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_product_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_product_form')})]"/>

@@ -1,20 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_raw_material_usage_picking_tree" model="ir.ui.view">
-        <field name="name">raw.material.usage.stock.picking.tree</field>
-        <field name="model">stock.picking</field>
-        <field name="arch" type="xml">
-            <tree string="Pemakaian Bahan Baku" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
-                <field name="name"/>
-                <field name="scheduled_date"/>
-                <field name="spk_reference"/>
-                <field name="location_id"/>
-                <field name="location_dest_id"/>
-                <field name="state"/>
-            </tree>
-        </field>
-    </record>
-
     <record id="view_raw_material_usage_picking_form_inherit" model="ir.ui.view">
         <field name="name">raw.material.usage.stock.picking.form.inherit</field>
         <field name="model">stock.picking</field>
@@ -34,28 +19,5 @@
                 <field name="is_raw_material_usage" invisible="1"/>
             </xpath>
         </field>
-    </record>
-
-    <record id="action_raw_material_receipt" model="ir.actions.act_window">
-        <field name="name">Penerimaan Bahan Baku</field>
-        <field name="res_model">stock.picking</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[("picking_type_code", "=", "incoming")]</field>
-        <field name="context">{"search_default_incoming": 1}</field>
-    </record>
-
-    <record id="action_raw_material_usage" model="ir.actions.act_window">
-        <field name="name">Pemakaian Bahan Baku</field>
-        <field name="res_model">stock.picking</field>
-        <field name="view_mode">tree,form</field>
-        <field name="domain">[("is_raw_material_usage", "=", True)]</field>
-        <field name="context" eval="{
-            'default_is_raw_material_usage': True,
-            'default_picking_type_id': ref('picking_type_raw_material_usage'),
-            'default_location_id': ref('stock.stock_location_stock'),
-            'default_location_dest_id': ref('stock_location_raw_material_production')
-        }"/>
-        <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_usage_picking_tree')})]"/>
     </record>
 </odoo>

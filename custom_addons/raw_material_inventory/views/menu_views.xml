@@ -4,6 +4,7 @@
         id="menu_raw_material_inventory_root"
         name="Raw Material"
         parent="stock.menu_stock_root"
+        groups="stock.group_stock_user"
         sequence="35"
     />
     <menuitem

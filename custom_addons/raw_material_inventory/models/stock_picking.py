@@ -28,4 +28,19 @@ class StockPicking(models.Model):
                     _("Produk berikut belum ditandai sebagai bahan baku: %s") % product_names
                 )
 
-        return super().button_validate()
+        result = super().button_validate()
+
+        usages = self.env["raw.material.usage"].search([("picking_id", "in", self.ids)])
+        for usage in usages:
+            if usage.picking_id.state == "done":
+                usage.state = "done"
+
+        return result
+
+    def action_cancel(self):
+        result = super().action_cancel()
+
+        usages = self.env["raw.material.usage"].search([("picking_id", "in", self.ids)])
+        usages.write({"state": "cancel"})
+
+        return result

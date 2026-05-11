@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_raw_material_stock_report_tree" model="ir.ui.view">
-        <field name="name">raw.material.stock.report.tree</field>
-        <field name="model">product.template</field>
+    <record id="view_raw_material_stock_report_line_tree" model="ir.ui.view">
+        <field name="name">raw.material.stock.report.line.tree</field>
+        <field name="model">raw.material.stock.report.line</field>
         <field name="arch" type="xml">
-            <tree string="Laporan Stok Bahan Baku" decoration-danger="is_stock_critical">
+            <tree string="Laporan Mutasi Stok Bahan Baku" decoration-danger="stock_status == 'critical'">
+                <field name="movement_date"/>
+                <field name="movement_type" widget="badge" decoration-success="movement_type == 'receipt'" decoration-warning="movement_type == 'usage'"/>
+                <field name="document_name"/>
+                <field name="reference"/>
                 <field name="default_code"/>
-                <field name="name"/>
-                <field name="qty_available"/>
+                <field name="product_tmpl_id"/>
                 <field name="uom_id"/>
-                <field name="raw_material_reorder_point"/>
-                <field name="raw_material_stock_status"/>
-                <field name="is_stock_critical" invisible="1"/>
-                <field name="virtual_available"/>
+                <field name="opening_qty"/>
+                <field name="received_qty" sum="Total Masuk"/>
+                <field name="used_qty" sum="Total Keluar"/>
+                <field name="net_qty" sum="Total Selisih"/>
+                <field name="balance_qty"/>
+                <field name="current_qty"/>
+                <field name="forecast_qty"/>
+                <field name="date_from" optional="hide"/>
+                <field name="date_to" optional="hide"/>
+                <field name="reorder_point" optional="hide"/>
+                <field name="stock_status" widget="badge" decoration-danger="stock_status == 'critical'" decoration-success="stock_status == 'safe'"/>
             </tree>
         </field>
     </record>
@@ -24,16 +34,19 @@
             <form string="Laporan Stok Bahan Baku">
                 <sheet>
                     <group>
-                        <field name="report_scope" widget="radio"/>
-                        <field
-                            name="product_ids"
-                            widget="many2many_tags"
-                            placeholder="Contoh: pilih BB-001 Tepung Terigu"
-                            invisible="report_scope != 'specific'"
-                        />
-                        <div class="text-muted" invisible="report_scope != 'specific'">
-                            Pilih satu atau beberapa bahan baku jika parameter laporan adalah Bahan Tertentu.
-                        </div>
+                        <group string="Parameter">
+                            <field name="report_scope" widget="radio"/>
+                            <field
+                                name="product_ids"
+                                widget="many2many_tags"
+                                placeholder="Contoh: pilih BB-001 Tepung Terigu"
+                                invisible="report_scope != 'specific'"
+                            />
+                        </group>
+                        <group string="Periode Mutasi">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                        </group>
                     </group>
                 </sheet>
                 <footer>
