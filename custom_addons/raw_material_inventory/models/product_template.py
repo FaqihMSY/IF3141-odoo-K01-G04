@@ -60,6 +60,13 @@ class ProductTemplate(models.Model):
 
         return products
 
+    def unlink(self):
+        raw_materials = self.filtered("is_raw_material")
+        variant_ids = raw_materials.product_variant_ids.ids
+        if variant_ids:
+            self.env["stock.quant"].sudo().search([("product_id", "in", variant_ids)]).unlink()
+        return super().unlink()
+
     @api.constrains("raw_material_initial_quantity")
     def _check_raw_material_initial_quantity(self):
         for product in self:

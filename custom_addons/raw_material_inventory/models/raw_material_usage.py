@@ -1,5 +1,8 @@
+from collections import defaultdict
+
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 
 class RawMaterialUsage(models.Model):
@@ -69,6 +72,7 @@ class RawMaterialUsage(models.Model):
                 raise UserError(_("Minimal isi satu bahan baku untuk pemakaian."))
 
             usage.line_ids._validate_lines()
+            usage._check_stock_availability()
             usage.picking_id = usage._create_stock_picking()
             usage.state = "confirmed"
 
@@ -84,6 +88,7 @@ class RawMaterialUsage(models.Model):
             if picking.state == "cancel":
                 raise UserError(_("Transfer inventory sudah dibatalkan."))
 
+            usage._check_stock_availability()
             picking.action_assign()
             for move in picking.move_ids:
                 if "quantity" in move._fields:
@@ -151,6 +156,90 @@ class RawMaterialUsage(models.Model):
         })
         picking.action_confirm()
         return picking
+
+    def _check_stock_availability(self):
+        source_location = self._get_source_location()
+        for usage in self:
+            required_by_product = usage._get_required_quantities_by_product()
+            self._check_required_quantities_available(required_by_product, source_location)
+
+    def _get_source_location(self):
+        source_location = self.env.ref("stock.stock_location_stock", raise_if_not_found=False)
+        if not source_location:
+            raise UserError(_("Lokasi stok bahan baku belum dikonfigurasi."))
+        return source_location
+
+    def _get_required_quantities_by_product(self):
+        self.ensure_one()
+        required_by_product = defaultdict(float)
+        for line in self.line_ids:
+            if not line.product_id:
+                continue
+            quantity = line.quantity
+            if line.product_uom_id and line.product_uom_id != line.product_id.uom_id:
+                quantity = line.product_uom_id._compute_quantity(quantity, line.product_id.uom_id)
+            required_by_product[line.product_id.id] += quantity
+        return required_by_product
+
+    @api.model
+    def _check_required_quantities_available(self, required_by_product, source_location):
+        if not required_by_product:
+            return
+
+        products = self.env["product.product"].browse(list(required_by_product.keys())).exists()
+        available_by_product = self._get_available_quantities_by_product(products, source_location)
+        shortage_messages = []
+
+        for product in products:
+            required_qty = required_by_product.get(product.id, 0.0)
+            available_qty = available_by_product.get(product.id, 0.0)
+            precision_rounding = product.uom_id.rounding
+            if (
+                float_compare(
+                    required_qty,
+                    available_qty,
+                    precision_rounding=precision_rounding,
+                )
+                <= 0
+            ):
+                continue
+
+            shortage_messages.append(
+                _(
+                    "%(product)s: diminta %(required).2f %(uom)s, "
+                    "stok tersedia %(available).2f %(uom)s"
+                ) % {
+                    "product": product.display_name,
+                    "required": required_qty,
+                    "available": available_qty,
+                    "uom": product.uom_id.name,
+                }
+            )
+
+        if shortage_messages:
+            raise UserError(
+                _("Stok bahan baku tidak mencukupi:\n%s")
+                % "\n".join(shortage_messages)
+            )
+
+    @api.model
+    def _get_available_quantities_by_product(self, products, source_location):
+        quantities_by_product = dict.fromkeys(products.ids, 0.0)
+        if not products:
+            return quantities_by_product
+
+        groups = self.env["stock.quant"].sudo().read_group(
+            [
+                ("product_id", "in", products.ids),
+                ("location_id", "child_of", source_location.id),
+            ],
+            ["product_id", "quantity:sum"],
+            ["product_id"],
+        )
+        for group in groups:
+            product_id = group["product_id"][0]
+            quantities_by_product[product_id] = group.get("quantity", 0.0)
+        return quantities_by_product
 
 
 class RawMaterialUsageLine(models.Model):
