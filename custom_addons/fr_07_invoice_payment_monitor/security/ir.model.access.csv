@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_fr07_invoice_payment_log_user,fr07.invoice.payment.log.user,model_fr07_invoice_payment_log,account.group_account_invoice,1,1,1,0
+access_fr07_register_payment_wizard_user,fr07.register.payment.wizard.user,model_fr07_register_payment_wizard,account.group_account_invoice,1,1,1,1
