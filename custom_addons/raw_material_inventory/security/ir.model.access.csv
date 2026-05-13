@@ -5,3 +5,6 @@ access_raw_material_usage,access.raw.material.usage,model_raw_material_usage,sto
 access_raw_material_usage_line,access.raw.material.usage.line,model_raw_material_usage_line,stock.group_stock_user,1,1,1,1
 access_raw_material_stock_report_wizard,access.raw.material.stock.report.wizard,model_raw_material_stock_report_wizard,stock.group_stock_user,1,1,1,1
 access_raw_material_stock_report_line,access.raw.material.stock.report.line,model_raw_material_stock_report_line,stock.group_stock_user,1,1,1,1
+access_procurement_supplier,access.procurement.supplier,model_res_partner,raw_material_inventory.group_procurement_staff,1,1,1,0
+access_procurement_purchase_order,access.procurement.purchase.order,model_purchase_order,raw_material_inventory.group_procurement_staff,1,1,1,0
+access_procurement_purchase_order_line,access.procurement.purchase.order.line,model_purchase_order_line,raw_material_inventory.group_procurement_staff,1,1,1,0
