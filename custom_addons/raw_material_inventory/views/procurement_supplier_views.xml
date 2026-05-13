@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_procurement_supplier_tree" model="ir.ui.view">
+        <field name="name">procurement.supplier.tree</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="Supplier">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <field name="country_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_procurement_supplier_form_inherit" model="ir.ui.view">
+        <field name="name">procurement.supplier.form.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Procurement">
+                    <group>
+                        <group string="Bahan Disuplai">
+                            <field name="supplied_product_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Kontak">
+                            <field name="phone"/>
+                            <field name="email"/>
+                        </group>
+                    </group>
+                    <group string="Riwayat PO">
+                        <field name="purchase_history_ids" readonly="1">
+                            <tree>
+                                <field name="po_number"/>
+                                <field name="date_order"/>
+                                <field name="state"/>
+                                <field name="amount_total"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_procurement_supplier_search" model="ir.ui.view">
+        <field name="name">procurement.supplier.search</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <search string="Supplier">
+                <field name="name"/>
+                <field name="phone"/>
+                <field name="email"/>
+                <field name="city"/>
+                <filter name="has_purchase" string="Memiliki PO" domain="[('purchase_history_ids', '!=', False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_city" string="Kota" context="{'group_by': 'city'}"/>
+                    <filter name="group_by_country" string="Negara" context="{'group_by': 'country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_procurement_supplier" model="ir.actions.act_window">
+        <field name="name">Supplier</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[("supplier_rank", ">", 0)]</field>
+        <field name="context">{"default_supplier_rank": 1}</field>
+        <field name="search_view_id" ref="view_procurement_supplier_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_procurement_supplier_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('base.view_partner_form')})]"/>
+    </record>
+</odoo>
