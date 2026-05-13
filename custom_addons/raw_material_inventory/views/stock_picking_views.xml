@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_raw_material_usage_picking_form_inherit" model="ir.ui.view">
+        <field name="name">raw.material.usage.stock.picking.form.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="attributes">
+                <attribute name="placeholder">Contoh: PL-001 / PO-001 / SPK-001</attribute>
+            </xpath>
+            <xpath expr="//field[@name='origin']" position="after">
+                <div class="text-muted">
+                    Isi referensi dokumen sumber, misalnya PL-001 untuk penerimaan atau SPK-001 untuk produksi.
+                </div>
+                <field name="spk_reference" placeholder="Contoh: SPK-001" invisible="not is_raw_material_usage"/>
+                <div class="text-muted" invisible="not is_raw_material_usage">
+                    Wajib diisi untuk pemakaian bahan baku agar penggunaan bisa ditelusuri ke SPK produksi.
+                </div>
+                <field name="is_raw_material_usage" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
