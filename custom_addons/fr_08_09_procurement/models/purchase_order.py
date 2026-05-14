@@ -31,6 +31,8 @@ class PurchaseOrder(models.Model):
             if vals.get("name", _("New")) in ("/", _("New")):
                 vals["name"] = sequence.next_by_code("procurement.purchase.order") or _("New")
 
+            self._ensure_procurement_supplier(vals.get("partner_id"))
+
             expected_date = vals.get("expected_delivery_date")
             if expected_date and vals.get("order_line"):
                 vals["order_line"] = self._apply_expected_date_to_lines(
@@ -40,12 +42,21 @@ class PurchaseOrder(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
+        self._ensure_procurement_supplier(vals.get("partner_id"))
         previous_dates = {order.id: order.expected_delivery_date for order in self}
         result = super().write(vals)
         if "expected_delivery_date" in vals:
             for order in self:
                 order._sync_expected_date_to_lines(previous_dates.get(order.id))
         return result
+
+    def _ensure_procurement_supplier(self, partner_id):
+        if not partner_id:
+            return
+
+        partner = self.env["res.partner"].browse(partner_id).exists()
+        if partner and partner.supplier_rank <= 0:
+            partner.supplier_rank = 1
 
     @api.onchange("expected_delivery_date")
     def _onchange_expected_delivery_date(self):
@@ -71,7 +82,7 @@ class PurchaseOrder(models.Model):
     @api.constrains("partner_id", "expected_delivery_date")
     def _check_procurement_header(self):
         for order in self:
-            if not order.partner_id or order.partner_id.supplier_rank <= 0:
+            if not order.partner_id:
                 raise ValidationError(_("Supplier wajib dipilih."))
             if not order.expected_delivery_date:
                 raise ValidationError(_("Estimasi tanggal pengiriman wajib diisi."))
@@ -145,8 +156,3 @@ class PurchaseOrderLine(models.Model):
                 raise ValidationError(_("Jumlah bahan baku harus lebih dari 0."))
             if line.price_unit <= 0:
                 raise ValidationError(_("Harga bahan baku harus lebih dari 0."))
-            if line.product_id and not line.product_id.product_tmpl_id.is_raw_material:
-                raise ValidationError(
-                    _("Produk %s belum ditandai sebagai bahan baku.")
-                    % line.product_id.display_name
-                )
