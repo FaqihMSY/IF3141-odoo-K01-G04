@@ -41,11 +41,11 @@ echo "Starting db container..."
 "${DC[@]}" up -d db
 
 echo "Recreating database..."
-"${DC[@]}" exec -T db dropdb -U odoo --if-exists postgres
-"${DC[@]}" exec -T db createdb -U odoo postgres
+"${DC[@]}" exec -T db dropdb -U odoo --if-exists sukha_final
+"${DC[@]}" exec -T db createdb -U odoo sukha_final
 
 echo "Restoring database from: $IN_FILE"
-"${DC[@]}" exec -T db pg_restore -U odoo -d postgres --no-owner --clean < "$IN_FILE" || true
+"${DC[@]}" exec -T db pg_restore -U odoo -d sukha_final --no-owner --clean < "$IN_FILE" || true
 
 if [[ -f "$FS_FILE" ]]; then
 	echo "Restoring filestore from: $FS_FILE"
