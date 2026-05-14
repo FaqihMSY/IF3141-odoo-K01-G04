@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_procurement_supplier,access.procurement.supplier,model_res_partner,fr_08_09_procurement.group_procurement_staff,1,1,1,0
+access_procurement_purchase_order,access.procurement.purchase.order,model_purchase_order,fr_08_09_procurement.group_procurement_staff,1,1,1,0
+access_procurement_purchase_order_line,access.procurement.purchase.order.line,model_purchase_order_line,fr_08_09_procurement.group_procurement_staff,1,1,1,0
