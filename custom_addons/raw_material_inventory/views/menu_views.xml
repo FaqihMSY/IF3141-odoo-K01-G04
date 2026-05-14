@@ -42,25 +42,4 @@
         action="action_raw_material_stock_report_wizard"
         sequence="45"
     />
-    <menuitem
-        id="menu_procurement_root"
-        name="Procurement"
-        parent="purchase.menu_purchase_root"
-        groups="raw_material_inventory.group_procurement_staff"
-        sequence="10"
-    />
-    <menuitem
-        id="menu_procurement_supplier"
-        name="Supplier"
-        parent="menu_procurement_root"
-        action="action_procurement_supplier"
-        sequence="10"
-    />
-    <menuitem
-        id="menu_procurement_purchase_order"
-        name="Purchase Order"
-        parent="menu_procurement_root"
-        action="action_procurement_purchase_order"
-        sequence="20"
-    />
 </odoo>
