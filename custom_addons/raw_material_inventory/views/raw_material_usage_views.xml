@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_raw_material_usage_tree" model="ir.ui.view">
+        <field name="name">raw.material.usage.tree</field>
+        <field name="model">raw.material.usage</field>
+        <field name="arch" type="xml">
+            <tree string="Pemakaian Bahan Baku" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="spk_reference"/>
+                <field name="picking_id"/>
+                <field name="picking_state"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_raw_material_usage_form" model="ir.ui.view">
+        <field name="name">raw.material.usage.form</field>
+        <field name="model">raw.material.usage</field>
+        <field name="arch" type="xml">
+            <form string="Pemakaian Bahan Baku">
+                <header>
+                    <button
+                        string="Buat Draft Transfer"
+                        type="object"
+                        name="action_confirm"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
+                    <button
+                        string="Validasi &amp; Kurangi Stok"
+                        type="object"
+                        name="action_validate_usage"
+                        class="btn-primary"
+                        invisible="state not in ('draft', 'confirmed')"
+                    />
+                    <button
+                        string="Sinkronkan Status"
+                        type="object"
+                        name="action_sync_state"
+                        invisible="not picking_id or state in ('done', 'cancel')"
+                    />
+                    <button
+                        string="Batalkan"
+                        type="object"
+                        name="action_cancel"
+                        invisible="state in ('done', 'cancel')"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            type="object"
+                            name="action_view_picking"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            invisible="not picking_id"
+                        >
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Transfer</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="spk_reference" readonly="state != 'draft'" placeholder="Contoh: SPK-001"/>
+                        </group>
+                        <group>
+                            <field name="picking_id" readonly="1"/>
+                            <field name="picking_state" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bahan Baku">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Catatan">
+                            <field name="notes" readonly="state != 'draft'" placeholder="Catatan pemakaian bahan baku"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_raw_material_usage_search" model="ir.ui.view">
+        <field name="name">raw.material.usage.search</field>
+        <field name="model">raw.material.usage</field>
+        <field name="arch" type="xml">
+            <search string="Pemakaian Bahan Baku">
+                <field name="name"/>
+                <field name="spk_reference"/>
+                <field name="picking_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Transfer Dibuat" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="Selesai" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_date" string="Tanggal" context="{'group_by': 'date'}"/>
+                    <filter name="group_by_spk" string="SPK" context="{'group_by': 'spk_reference'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_raw_material_usage" model="ir.actions.act_window">
+        <field name="name">Pemakaian Bahan Baku</field>
+        <field name="res_model">raw.material.usage</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="view_raw_material_usage_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_usage_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_usage_form')})]"/>
+    </record>
+</odoo>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_raw_material_receipt_tree" model="ir.ui.view">
+        <field name="name">raw.material.receipt.tree</field>
+        <field name="model">raw.material.receipt</field>
+        <field name="arch" type="xml">
+            <tree string="Penerimaan Bahan Baku" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="supplier_reference"/>
+                <field name="picking_id"/>
+                <field name="picking_state"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_raw_material_receipt_form" model="ir.ui.view">
+        <field name="name">raw.material.receipt.form</field>
+        <field name="model">raw.material.receipt</field>
+        <field name="arch" type="xml">
+            <form string="Penerimaan Bahan Baku">
+                <header>
+                    <button
+                        string="Buat Draft Receipt"
+                        type="object"
+                        name="action_confirm"
+                        class="btn-primary"
+                        invisible="state != 'draft'"
+                    />
+                    <button
+                        string="Validasi &amp; Tambah Stok"
+                        type="object"
+                        name="action_validate_receipt"
+                        class="btn-primary"
+                        invisible="state not in ('draft', 'confirmed')"
+                    />
+                    <button
+                        string="Sinkronkan Status"
+                        type="object"
+                        name="action_sync_state"
+                        invisible="not picking_id or state in ('done', 'cancel')"
+                    />
+                    <button
+                        string="Batalkan"
+                        type="object"
+                        name="action_cancel"
+                        invisible="state in ('done', 'cancel')"
+                    />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            type="object"
+                            name="action_view_picking"
+                            class="oe_stat_button"
+                            icon="fa-truck"
+                            invisible="not picking_id"
+                        >
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Receipt</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Dokumen">
+                            <field name="name"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="supplier_reference" readonly="state != 'draft'" placeholder="Contoh: PO-001 / SJ-001"/>
+                        </group>
+                        <group string="Inventory">
+                            <field name="picking_id" readonly="1"/>
+                            <field name="picking_state" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Bahan Diterima">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="product_uom_id"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Catatan">
+                            <field name="notes" readonly="state != 'draft'" placeholder="Catatan penerimaan bahan baku"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_raw_material_receipt_search" model="ir.ui.view">
+        <field name="name">raw.material.receipt.search</field>
+        <field name="model">raw.material.receipt</field>
+        <field name="arch" type="xml">
+            <search string="Penerimaan Bahan Baku">
+                <field name="name"/>
+                <field name="supplier_reference"/>
+                <field name="picking_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Receipt Dibuat" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="done" string="Selesai" domain="[('state', '=', 'done')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="group_by_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_by_date" string="Tanggal" context="{'group_by': 'date'}"/>
+                    <filter name="group_by_supplier_reference" string="Referensi Supplier" context="{'group_by': 'supplier_reference'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_raw_material_receipt" model="ir.actions.act_window">
+        <field name="name">Penerimaan Bahan Baku</field>
+        <field name="res_model">raw.material.receipt</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="search_view_id" ref="view_raw_material_receipt_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_raw_material_receipt_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_raw_material_receipt_form')})]"/>
+    </record>
+</odoo>
