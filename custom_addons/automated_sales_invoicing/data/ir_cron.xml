@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="ir_cron_fr06_auto_invoice_ready_orders" model="ir.cron">
-        <field name="name">FR-06 Auto Invoice Ready Sales Orders</field>
+    <record id="ir_cron_auto_invoice_ready_orders" model="ir.cron">
+        <field name="name">Automated Sales Invoicing: Ready Sales Orders</field>
         <field name="model_id" ref="sale.model_sale_order"/>
         <field name="state">code</field>
-        <field name="code">model._cron_fr06_auto_invoice_ready_orders()</field>
+        <field name="code">model._cron_auto_invoice_ready_orders()</field>
         <field name="interval_number">10</field>
         <field name="interval_type">minutes</field>
         <field name="active">True</field>

@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_move_form_fr07_payment_monitor" model="ir.ui.view">
-        <field name="name">account.move.form.fr07.payment.monitor</field>
+    <record id="view_move_form_invoice_payment_monitoring" model="ir.ui.view">
+        <field name="name">account.move.form.invoice.payment.monitoring</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <xpath expr="//header" position="inside">
                 <button
-                    name="action_fr07_open_register_payment"
+                    name="action_open_register_invoice_payment"
                     type="object"
-                    string="FR-07 Register Payment"
+                    string="Register Payment"
                     class="btn-primary"
                     invisible="move_type != 'out_invoice' or state != 'posted' or payment_state == 'paid'"
                 />
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button
-                    name="action_fr07_view_payment_logs"
+                    name="action_view_invoice_payment_logs"
                     type="object"
                     class="oe_stat_button"
                     icon="fa-money"
                     invisible="move_type != 'out_invoice'"
                 >
-                    <field name="fr07_payment_log_count" widget="statinfo" string="FR-07 Payments"/>
+                    <field name="invoice_payment_log_count" widget="statinfo" string="Payments"/>
                 </button>
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page
-                    string="FR-07 Payment Monitor"
+                    string="Payment Monitoring"
                     invisible="move_type != 'out_invoice'"
                 >
                     <group>
-                        <field name="fr07_payment_status" readonly="1"/>
+                        <field name="invoice_payment_status" readonly="1"/>
                         <field name="amount_total" readonly="1"/>
                         <field name="amount_residual" readonly="1"/>
                         <field name="payment_state" readonly="1"/>
                     </group>
-                    <field name="fr07_payment_log_ids" readonly="1">
+                    <field name="invoice_payment_log_ids" readonly="1">
                         <tree>
                             <field name="payment_date"/>
                             <field name="invoice_number"/>
@@ -53,37 +53,37 @@
         </field>
     </record>
 
-    <record id="view_fr07_payment_monitor_tree" model="ir.ui.view">
-        <field name="name">account.move.tree.fr07.payment.monitor</field>
+    <record id="view_invoice_payment_monitor_tree" model="ir.ui.view">
+        <field name="name">account.move.tree.invoice.payment.monitor</field>
         <field name="model">account.move</field>
         <field name="arch" type="xml">
-            <tree string="FR-07 Payment Monitor" create="false">
+            <tree string="Invoice Payment Monitor" create="false">
                 <field name="name" string="Invoice Number"/>
                 <field name="invoice_date"/>
                 <field name="invoice_date_due"/>
                 <field name="partner_id"/>
                 <field name="amount_total"/>
                 <field name="amount_residual"/>
-                <field name="fr07_payment_status"/>
+                <field name="invoice_payment_status"/>
                 <field name="payment_state"/>
             </tree>
         </field>
     </record>
 
-    <record id="action_fr07_payment_monitor" model="ir.actions.act_window">
-        <field name="name">FR-07 Payment Monitor</field>
+    <record id="action_invoice_payment_monitor" model="ir.actions.act_window">
+        <field name="name">Invoice Payment Monitor</field>
         <field name="res_model">account.move</field>
         <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_fr07_payment_monitor_tree"/>
+        <field name="view_id" ref="view_invoice_payment_monitor_tree"/>
         <field name="domain">[('move_type', '=', 'out_invoice'), ('state', '=', 'posted')]</field>
         <field name="context">{'search_default_posted': 1}</field>
     </record>
 
     <menuitem
-        id="menu_fr07_payment_monitor"
-        name="FR-07 Payment Monitor"
+        id="menu_invoice_payment_monitor"
+        name="Invoice Payment Monitor"
         parent="account.menu_finance"
-        action="action_fr07_payment_monitor"
+        action="action_invoice_payment_monitor"
         sequence="83"
     />
 </odoo>

@@ -1,6 +1,6 @@
 {
-    "name": "FR-06 Automatic Sales Invoice",
-    "summary": "Automatically create and post unique invoices for completed sales deliveries.",
+    "name": "Automated Sales Invoicing",
+    "summary": "Automatically create and post unique customer invoices for completed sales deliveries.",
     "version": "17.0.1.0.0",
     "category": "Accounting/Accounting",
     "author": "IF3141 K01 G04",

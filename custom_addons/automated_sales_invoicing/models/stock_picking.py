@@ -18,8 +18,8 @@ class StockPicking(models.Model):
             and picking.sale_id
         ).mapped("sale_id")
         try:
-            sale_orders._fr06_create_and_post_invoice()
+            sale_orders._create_and_post_automatic_invoice()
         except Exception:
-            _logger.exception("FR-06 automatic invoice generation failed after delivery.")
+            _logger.exception("Automatic invoice generation failed after delivery.")
 
         return result
