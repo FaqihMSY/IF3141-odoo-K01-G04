@@ -10,24 +10,24 @@ _logger = logging.getLogger(__name__)
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
-    fr06_auto_invoice_id = fields.Many2one(
+    auto_invoice_id = fields.Many2one(
         "account.move",
-        string="FR-06 Auto Invoice",
+        string="Automatic Invoice",
         copy=False,
         readonly=True,
     )
-    fr06_auto_invoice_created = fields.Boolean(
-        string="FR-06 Auto Invoice Created",
+    auto_invoice_created = fields.Boolean(
+        string="Automatic Invoice Created",
         copy=False,
         readonly=True,
     )
-    fr06_auto_invoice_date = fields.Datetime(
-        string="FR-06 Auto Invoice Date",
+    auto_invoice_date = fields.Datetime(
+        string="Automatic Invoice Date",
         copy=False,
         readonly=True,
     )
 
-    def _fr06_has_completed_delivery(self):
+    def _has_completed_delivery_for_auto_invoice(self):
         self.ensure_one()
         outgoing_pickings = self.picking_ids.filtered(
             lambda picking: picking.picking_type_code == "outgoing"
@@ -37,20 +37,20 @@ class SaleOrder(models.Model):
             picking.state == "done" for picking in outgoing_pickings
         )
 
-    def _fr06_is_ready_for_auto_invoice(self):
+    def _is_ready_for_auto_invoice(self):
         self.ensure_one()
-        existing_invoice = self.fr06_auto_invoice_id
+        existing_invoice = self.auto_invoice_id
         if existing_invoice and existing_invoice.state != "cancel":
             return False
 
         return (
             self.state in ("sale", "done")
             and self.invoice_status == "to invoice"
-            and self._fr06_has_completed_delivery()
+            and self._has_completed_delivery_for_auto_invoice()
         )
 
-    def _fr06_create_and_post_invoice(self):
-        ready_orders = self.filtered(lambda order: order._fr06_is_ready_for_auto_invoice())
+    def _create_and_post_automatic_invoice(self):
+        ready_orders = self.filtered(lambda order: order._is_ready_for_auto_invoice())
         created_invoices = self.env["account.move"]
 
         for order in ready_orders:
@@ -60,24 +60,24 @@ class SaleOrder(models.Model):
             if not invoices:
                 continue
 
-            invoices.write({"fr06_auto_generated": True})
+            invoices.write({"auto_invoice_generated": True})
             draft_invoices = invoices.filtered(lambda move: move.state == "draft")
             draft_invoices.action_post()
 
             invoice = invoices[:1]
             order.write(
                 {
-                    "fr06_auto_invoice_id": invoice.id,
-                    "fr06_auto_invoice_created": True,
-                    "fr06_auto_invoice_date": fields.Datetime.now(),
+                    "auto_invoice_id": invoice.id,
+                    "auto_invoice_created": True,
+                    "auto_invoice_date": fields.Datetime.now(),
                 }
             )
             created_invoices |= invoices
 
         return created_invoices
 
-    def action_fr06_create_auto_invoice(self):
-        invoices = self._fr06_create_and_post_invoice()
+    def action_create_automatic_invoice(self):
+        invoices = self._create_and_post_automatic_invoice()
         if not invoices:
             raise UserError(
                 _(
@@ -103,21 +103,21 @@ class SaleOrder(models.Model):
             "view_mode": "tree,form",
         }
 
-    def _cron_fr06_auto_invoice_ready_orders(self, limit=50):
+    def _cron_auto_invoice_ready_orders(self, limit=50):
         orders = self.search(
             [
                 ("state", "in", ("sale", "done")),
                 ("invoice_status", "=", "to invoice"),
                 "|",
-                ("fr06_auto_invoice_id", "=", False),
-                ("fr06_auto_invoice_id.state", "=", "cancel"),
+                ("auto_invoice_id", "=", False),
+                ("auto_invoice_id.state", "=", "cancel"),
             ],
             limit=limit,
         )
 
-        ready_orders = orders.filtered(lambda order: order._fr06_is_ready_for_auto_invoice())
+        ready_orders = orders.filtered(lambda order: order._is_ready_for_auto_invoice())
         try:
-            ready_orders._fr06_create_and_post_invoice()
+            ready_orders._create_and_post_automatic_invoice()
         except Exception:
-            _logger.exception("FR-06 automatic invoice generation failed.")
+            _logger.exception("Automatic invoice generation failed.")
             raise
