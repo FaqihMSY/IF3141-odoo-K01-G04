@@ -2,9 +2,9 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
 
-class Fr07RegisterPaymentWizard(models.TransientModel):
-    _name = "fr07.register.payment.wizard"
-    _description = "FR-07 Register Invoice Payment"
+class RegisterInvoicePaymentWizard(models.TransientModel):
+    _name = "register.invoice.payment.wizard"
+    _description = "Register Invoice Payment"
 
     invoice_ref = fields.Char(string="Invoice Number", required=True)
     invoice_id = fields.Many2one(
@@ -49,7 +49,7 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
             self.invoice_id = False
             return
 
-        invoice = self._fr07_find_invoice(self.invoice_ref)
+        invoice = self._find_invoice(self.invoice_ref)
         self.invoice_id = invoice
         if invoice and not self.amount:
             self.amount = invoice.amount_residual
@@ -64,7 +64,7 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
         return {"domain": {"payment_method_line_id": domain}}
 
     @api.model
-    def _fr07_find_invoice(self, invoice_ref):
+    def _find_invoice(self, invoice_ref):
         invoice = self.env["account.move"].search(
             [
                 ("move_type", "=", "out_invoice"),
@@ -75,7 +75,7 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
         )
         return invoice
 
-    def _fr07_validate_payment(self, invoice):
+    def _validate_payment(self, invoice):
         self.ensure_one()
         if not invoice:
             raise UserError(_("Invoice number was not found or invoice is not posted."))
@@ -100,8 +100,8 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
 
     def action_confirm_payment(self):
         self.ensure_one()
-        invoice = self.invoice_id or self._fr07_find_invoice(self.invoice_ref)
-        self._fr07_validate_payment(invoice)
+        invoice = self.invoice_id or self._find_invoice(self.invoice_ref)
+        self._validate_payment(invoice)
 
         register = self.env["account.payment.register"].with_context(
             active_model="account.move",
@@ -118,9 +118,9 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
         payments = register._create_payments()
 
         invoice.invalidate_recordset()
-        invoice._compute_fr07_payment_status()
+        invoice._compute_invoice_payment_status()
 
-        self.env["fr07.invoice.payment.log"].create(
+        self.env["invoice.payment.log"].create(
             {
                 "invoice_id": invoice.id,
                 "amount": self.amount,
@@ -128,7 +128,7 @@ class Fr07RegisterPaymentWizard(models.TransientModel):
                 "journal_id": self.journal_id.id,
                 "payment_method_line_id": self.payment_method_line_id.id,
                 "payment_id": payments[:1].id,
-                "status_after_payment": invoice.fr07_payment_status,
+                "status_after_payment": invoice.invoice_payment_status,
                 "note": self.note,
             }
         )

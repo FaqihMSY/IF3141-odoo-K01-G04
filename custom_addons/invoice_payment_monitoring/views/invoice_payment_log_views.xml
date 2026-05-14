@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_fr07_invoice_payment_log_tree" model="ir.ui.view">
-        <field name="name">fr07.invoice.payment.log.tree</field>
-        <field name="model">fr07.invoice.payment.log</field>
+    <record id="view_invoice_payment_log_tree" model="ir.ui.view">
+        <field name="name">invoice.payment.log.tree</field>
+        <field name="model">invoice.payment.log</field>
         <field name="arch" type="xml">
-            <tree string="FR-07 Payment History">
+            <tree string="Payment History">
                 <field name="payment_date"/>
                 <field name="invoice_number"/>
                 <field name="partner_id"/>
@@ -17,11 +17,11 @@
         </field>
     </record>
 
-    <record id="view_fr07_invoice_payment_log_form" model="ir.ui.view">
-        <field name="name">fr07.invoice.payment.log.form</field>
-        <field name="model">fr07.invoice.payment.log</field>
+    <record id="view_invoice_payment_log_form" model="ir.ui.view">
+        <field name="name">invoice.payment.log.form</field>
+        <field name="model">invoice.payment.log</field>
         <field name="arch" type="xml">
-            <form string="FR-07 Payment History">
+            <form string="Payment History">
                 <sheet>
                     <group>
                         <field name="invoice_id"/>
@@ -39,17 +39,17 @@
         </field>
     </record>
 
-    <record id="action_fr07_invoice_payment_logs" model="ir.actions.act_window">
-        <field name="name">FR-07 Payment History</field>
-        <field name="res_model">fr07.invoice.payment.log</field>
+    <record id="action_invoice_payment_logs" model="ir.actions.act_window">
+        <field name="name">Payment History</field>
+        <field name="res_model">invoice.payment.log</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <menuitem
-        id="menu_fr07_invoice_payment_logs"
-        name="FR-07 Payment History"
+        id="menu_invoice_payment_logs"
+        name="Payment History"
         parent="account.menu_finance"
-        action="action_fr07_invoice_payment_logs"
+        action="action_invoice_payment_logs"
         sequence="85"
     />
 </odoo>

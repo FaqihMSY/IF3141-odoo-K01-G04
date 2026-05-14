@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_fr07_register_payment_wizard_form" model="ir.ui.view">
-        <field name="name">fr07.register.payment.wizard.form</field>
-        <field name="model">fr07.register.payment.wizard</field>
+    <record id="view_register_invoice_payment_wizard_form" model="ir.ui.view">
+        <field name="name">register.invoice.payment.wizard.form</field>
+        <field name="model">register.invoice.payment.wizard</field>
         <field name="arch" type="xml">
-            <form string="FR-07 Register Invoice Payment">
+            <form string="Register Invoice Payment">
                 <group>
                     <field name="invoice_ref" placeholder="e.g. INV/2026/00001"/>
                     <field name="invoice_id" readonly="1"/>
@@ -33,18 +33,18 @@
         </field>
     </record>
 
-    <record id="action_fr07_register_payment_wizard" model="ir.actions.act_window">
-        <field name="name">FR-07 Register Invoice Payment</field>
-        <field name="res_model">fr07.register.payment.wizard</field>
+    <record id="action_register_invoice_payment_wizard" model="ir.actions.act_window">
+        <field name="name">Register Invoice Payment</field>
+        <field name="res_model">register.invoice.payment.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
     </record>
 
     <menuitem
-        id="menu_fr07_register_payment_wizard"
-        name="FR-07 Register Payment"
+        id="menu_register_invoice_payment_wizard"
+        name="Register Invoice Payment"
         parent="account.menu_finance"
-        action="action_fr07_register_payment_wizard"
+        action="action_register_invoice_payment_wizard"
         sequence="84"
     />
 </odoo>

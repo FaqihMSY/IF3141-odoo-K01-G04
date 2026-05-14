@@ -1,9 +1,9 @@
 from odoo import fields, models
 
 
-class Fr07InvoicePaymentLog(models.Model):
-    _name = "fr07.invoice.payment.log"
-    _description = "FR-07 Invoice Payment History"
+class InvoicePaymentLog(models.Model):
+    _name = "invoice.payment.log"
+    _description = "Invoice Payment History"
     _order = "payment_date desc, id desc"
 
     invoice_id = fields.Many2one(
