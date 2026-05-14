@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem
+        id="menu_procurement_root"
+        name="Procurement"
+        parent="purchase.menu_purchase_root"
+        groups="fr_08_09_procurement.group_procurement_staff"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_procurement_supplier"
+        name="Supplier"
+        parent="menu_procurement_root"
+        action="action_procurement_supplier"
+        sequence="10"
+    />
+    <menuitem
+        id="menu_procurement_purchase_order"
+        name="Purchase Order"
+        parent="menu_procurement_root"
+        action="action_procurement_purchase_order"
+        sequence="20"
+    />
+</odoo>
