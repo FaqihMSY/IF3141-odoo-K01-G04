@@ -24,11 +24,16 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,purchase,done"/>
                 </header>
                 <sheet>
+                    <field name="company_id" invisible="1"/>
                     <group>
                         <group string="Informasi PO">
                             <field name="po_number" readonly="1"/>
                             <field name="date_order"/>
-                            <field name="partner_id" domain="[('supplier_rank', '>', 0)]"/>
+                            <field
+                                name="partner_id"
+                                context="{'default_supplier_rank': 1, 'show_vat': True}"
+                                options="{'no_quick_create': True}"
+                            />
                             <field name="expected_delivery_date" required="1"/>
                         </group>
                         <group string="Total">
@@ -42,7 +47,12 @@
                         <page string="Detail Bahan Baku">
                             <field name="order_line" context="{'default_date_planned': expected_delivery_date}">
                                 <tree editable="bottom">
-                                    <field name="product_id" domain="[('product_tmpl_id.is_raw_material', '=', True)]"/>
+                                    <field
+                                        name="product_id"
+                                        domain="[('purchase_ok', '=', True)]"
+                                        context="{'default_purchase_ok': True, 'default_is_raw_material': True, 'default_detailed_type': 'product'}"
+                                        options="{'no_quick_create': True}"
+                                    />
                                     <field name="name" string="Deskripsi"/>
                                     <field name="product_qty"/>
                                     <field name="product_uom_category_id" invisible="1"/>
