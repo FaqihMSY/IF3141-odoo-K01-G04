@@ -21,6 +21,13 @@
         <field name="arch" type="xml">
             <form string="Purchase Order">
                 <header>
+                    <button name="action_rfq_send" invisible="state != 'draft'" string="Send by Email" type="object" context="{'send_rfq': True}" class="oe_highlight"/>
+                    <button name="action_rfq_send" invisible="state != 'sent'" string="Re-Send by Email" type="object" context="{'send_rfq': True}"/>
+                    <button name="button_confirm" invisible="state != 'sent'" string="Confirm Order" type="object" context="{'validate_analytic': True}" class="oe_highlight"/>
+                    <button name="button_confirm" invisible="state != 'draft'" string="Confirm Order" type="object" context="{'validate_analytic': True}"/>
+                    <button name="button_cancel" invisible="state not in ('draft', 'sent', 'purchase')" string="Cancel" type="object"/>
+                    <button name="button_done" invisible="state != 'purchase'" string="Lock" type="object"/>
+                    <button name="button_unlock" invisible="state != 'done'" string="Unlock" type="object" groups="purchase.group_purchase_manager"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,sent,purchase,done"/>
                 </header>
                 <sheet>
