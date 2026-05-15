@@ -55,7 +55,7 @@ echo Restoring database from: %IN_FILE%
 
 if exist "%FS_FILE%" (
 	echo Restoring filestore from: %FS_FILE%
-	%DC% run --rm -v odoo-web-data:/filestore alpine sh -c "set -e; find /filestore -mindepth 1 -exec rm -rf {} +; tar xzf \"/backup/%FS_BASENAME%\" -C /filestore; fs_base=/filestore/.local/share/Odoo/filestore; if [ -d \"$fs_base/postgres\" ]; then mkdir -p \"$fs_base/sukha_final\"; cp -a \"$fs_base/postgres/.\" \"$fs_base/sukha_final/\"; fi" || goto :error
+	%DC% run --rm -v odoo-web-data:/filestore -v "%cd%/dump:/backup" alpine sh -c "set -e; rm -rf /filestore/* /filestore/.[!.]* /filestore/..?* || true; tar xzf \"/backup/%FS_BASENAME%\" -C /filestore; fs_base=/filestore/.local/share/Odoo/filestore; if [ -d \"$fs_base/postgres\" ]; then mkdir -p \"$fs_base/sukha_final\"; cp -a \"$fs_base/postgres/.\" \"$fs_base/sukha_final/\"; fi" || goto :error
 ) else (
 	echo Warning: No filestore backup found at %FS_FILE%, skipping.
 )
