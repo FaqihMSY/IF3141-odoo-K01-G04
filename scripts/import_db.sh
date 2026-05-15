@@ -31,6 +31,7 @@ if [[ ! -f "$IN_FILE" ]]; then
 fi
 
 FS_FILE="${IN_FILE%.dump}_filestore.tar.gz"
+FS_BASENAME="$(basename "$FS_FILE")"
 
 cd "$PROJECT_DIR"
 
@@ -41,15 +42,24 @@ echo "Starting db container..."
 "${DC[@]}" up -d db
 
 echo "Recreating database..."
-"${DC[@]}" exec -T db dropdb -U odoo --if-exists postgres
-"${DC[@]}" exec -T db createdb -U odoo postgres
+"${DC[@]}" exec -T db dropdb -U odoo --if-exists sukha_final
+"${DC[@]}" exec -T db createdb -U odoo sukha_final
 
 echo "Restoring database from: $IN_FILE"
-"${DC[@]}" exec -T db pg_restore -U odoo -d postgres --no-owner --clean < "$IN_FILE" || true
+"${DC[@]}" exec -T db pg_restore -U odoo -d sukha_final --no-owner --clean --if-exists < "$IN_FILE"
 
 if [[ -f "$FS_FILE" ]]; then
 	echo "Restoring filestore from: $FS_FILE"
-	"${DC[@]}" run --rm -v odoo-web-data:/filestore alpine sh -c "rm -rf /filestore/* && tar xzf - -C /filestore" < "$FS_FILE"
+	"${DC[@]}" run --rm -v odoo-web-data:/filestore alpine sh -c "
+		set -e
+		find /filestore -mindepth 1 -exec rm -rf {} +
+		tar xzf \"/backup/$FS_BASENAME\" -C /filestore
+		fs_base=/filestore/.local/share/Odoo/filestore
+		if [ -d \"\$fs_base/postgres\" ]; then
+			mkdir -p \"\$fs_base/sukha_final\"
+			cp -a \"\$fs_base/postgres/.\" \"\$fs_base/sukha_final/\"
+		fi
+	"
 else
 	echo "Warning: No filestore backup found at $FS_FILE, skipping."
 fi

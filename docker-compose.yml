@@ -13,11 +13,11 @@ services:
       - odoo-web-data:/var/lib/odoo
     command: >
       odoo 
+      -d sukha_final
       --db_host=db 
       --db_port=5432 
       --db_user=odoo 
       --db_password=password 
-      -i base
       --load-language=en_US
       --without-demo=all
 

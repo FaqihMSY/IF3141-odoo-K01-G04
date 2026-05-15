@@ -31,7 +31,7 @@ echo Starting db container...
 %DC% up -d db || goto :error
 
 echo Exporting database to: %OUT_FILE%
-%DC% exec -T db pg_dump -U odoo -d postgres -Fc > "%OUT_FILE%" || goto :error
+%DC% exec -T db pg_dump -U odoo -d sukha_final -Fc > "%OUT_FILE%" || goto :error
 
 echo Exporting filestore to: %FS_FILE%
 %DC% run --rm -v odoo-web-data:/filestore alpine tar czf - -C /filestore . > "%FS_FILE%" || goto :error

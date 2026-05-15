@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_invoice_payment_log_tree" model="ir.ui.view">
+        <field name="name">invoice.payment.log.tree</field>
+        <field name="model">invoice.payment.log</field>
+        <field name="arch" type="xml">
+            <tree string="Payment History">
+                <field name="payment_date"/>
+                <field name="invoice_number"/>
+                <field name="partner_id"/>
+                <field name="amount"/>
+                <field name="journal_id"/>
+                <field name="status_after_payment"/>
+                <field name="payment_id"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_invoice_payment_log_form" model="ir.ui.view">
+        <field name="name">invoice.payment.log.form</field>
+        <field name="model">invoice.payment.log</field>
+        <field name="arch" type="xml">
+            <form string="Payment History">
+                <sheet>
+                    <group>
+                        <field name="invoice_id"/>
+                        <field name="partner_id"/>
+                        <field name="amount"/>
+                        <field name="payment_date"/>
+                        <field name="journal_id"/>
+                        <field name="payment_method_line_id"/>
+                        <field name="status_after_payment"/>
+                        <field name="payment_id"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_invoice_payment_logs" model="ir.actions.act_window">
+        <field name="name">Payment History</field>
+        <field name="res_model">invoice.payment.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="menu_invoice_payment_logs"
+        name="Payment History"
+        parent="account.menu_finance"
+        action="action_invoice_payment_logs"
+        sequence="85"
+    />
+</odoo>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_register_invoice_payment_wizard_form" model="ir.ui.view">
+        <field name="name">register.invoice.payment.wizard.form</field>
+        <field name="model">register.invoice.payment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Register Invoice Payment">
+                <group>
+                    <field name="invoice_ref" placeholder="e.g. INV/2026/00001"/>
+                    <field name="invoice_id" readonly="1"/>
+                    <field name="partner_id"/>
+                    <field name="amount"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="payment_date"/>
+                    <field name="journal_id"/>
+                    <field
+                        name="payment_method_line_id"
+                        domain="[('journal_id', '=', journal_id), ('payment_type', '=', 'inbound')]"
+                        context="{'show_payment_journal_id': True}"
+                    />
+                    <field name="note"/>
+                </group>
+                <footer>
+                    <button
+                        name="action_confirm_payment"
+                        type="object"
+                        string="Confirm Payment"
+                        class="btn-primary"
+                    />
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_register_invoice_payment_wizard" model="ir.actions.act_window">
+        <field name="name">Register Invoice Payment</field>
+        <field name="res_model">register.invoice.payment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_register_invoice_payment_wizard"
+        name="Register Invoice Payment"
+        parent="account.menu_finance"
+        action="action_register_invoice_payment_wizard"
+        sequence="84"
+    />
+</odoo>
