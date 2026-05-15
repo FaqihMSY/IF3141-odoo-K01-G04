@@ -27,7 +27,7 @@ echo "Exporting database to: $DB_FILE"
 "${DC[@]}" exec -T db pg_dump -U odoo -d sukha_final -Fc > "$DB_FILE"
 
 echo "Exporting filestore to: $FS_FILE"
-"${DC[@]}" run --rm -v odoo-web-data:/filestore alpine tar czf - -C /filestore . > "$FS_FILE"
+"${DC[@]}" run --no-deps --rm -v odoo-web-data:/filestore alpine tar czf - -C /filestore . > "$FS_FILE"
 
 echo "Done. Backup files:"
 echo "  DB:        $DB_FILE"

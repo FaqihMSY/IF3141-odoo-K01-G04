@@ -17,7 +17,7 @@ IN_FILE="${1:-}"
 
 if [[ -z "$IN_FILE" ]]; then
 	if [[ -d "$DUMP_DIR" ]]; then
-		IN_FILE="$(ls -1t "$DUMP_DIR"/odoo_backup_*.dump 2>/dev/null | head -n 1 || true)"
+		IN_FILE="$(find "$DUMP_DIR" -maxdepth 1 -type f -name 'odoo_backup_*.dump' | sort | tail -n 1 || true)"
 	fi
 	if [[ -z "$IN_FILE" ]]; then
 		echo "No backup provided and no dump found in $DUMP_DIR"
@@ -50,9 +50,9 @@ echo "Restoring database from: $IN_FILE"
 
 if [[ -f "$FS_FILE" ]]; then
 	echo "Restoring filestore from: $FS_FILE"
-	"${DC[@]}" run --rm -v odoo-web-data:/filestore alpine sh -c "
+	"${DC[@]}" run --no-deps --rm -v odoo-web-data:/filestore alpine sh -c "
 		set -e
-		find /filestore -mindepth 1 -exec rm -rf {} +
+		rm -rf /filestore/* /filestore/.[!.]* /filestore/..?*
 		tar xzf \"/backup/$FS_BASENAME\" -C /filestore
 		fs_base=/filestore/.local/share/Odoo/filestore
 		if [ -d \"\$fs_base/postgres\" ]; then
@@ -65,6 +65,6 @@ else
 fi
 
 echo "Starting full stack..."
-"${DC[@]}" up -d
+"${DC[@]}" up -d db web
 
 echo "Done. Database imported."
